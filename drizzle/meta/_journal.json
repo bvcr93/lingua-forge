@@ -8,6 +8,20 @@
       "when": 1742404830031,
       "tag": "0000_aspiring_stature",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1742413536891,
+      "tag": "0001_opposite_korvac",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1742490135312,
+      "tag": "0002_open_tarot",
+      "breakpoints": true
     }
   ]
 }

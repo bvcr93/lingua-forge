@@ -1,18 +1,14 @@
+// src/app/languages/create/page.tsx
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  ArrowLeft,
-  Info,
-  Languages,
-  Plus,
-  Save
-} from "lucide-react";
+import { ArrowLeft, Info, Languages, Plus, Save, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +16,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -49,6 +45,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { createLanguage } from "@/app/actions/language-actions";
+// Import a method to get current user ID - you'll need to add this
 
 const languagePurposes = [
   { label: "Fiction/Novel", value: "fiction" },
@@ -96,30 +94,35 @@ const formSchema = z.object({
       message: "Language name must be at least 2 characters.",
     })
     .max(50),
-  purpose: z.string(),
+  purpose: z.string().min(1, "Please select a purpose"),
   description: z
     .string()
     .max(500, {
       message: "Description must not exceed 500 characters.",
     })
-    .optional(),
-  inspiration: z.array(z.string()).optional(),
-  writingSystem: z.string(),
-  wordOrder: z.string(),
-  consonantCategories: z.array(z.string()),
-  vowelInventory: z.string().optional(),
-  syllableStructure: z.string().optional(),
+    .optional()
+    .nullable(),
+  inspiration: z.array(z.string()).optional().nullable(),
+  writingSystem: z.string().min(1, "Please select a writing system"),
+  wordOrder: z.string().min(1, "Please select a word order"),
+  consonantCategories: z
+    .array(z.string())
+    .min(1, "Please select at least one consonant category"),
+  vowelInventory: z.string().optional().nullable(),
+  syllableStructure: z.string().optional().nullable(),
   hasGender: z.boolean().default(false),
   hasCases: z.boolean().default(false),
   hasTones: z.boolean().default(false),
-  sampleWords: z.string().optional(),
+  sampleWords: z.string().optional().nullable(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 export default function CreateLanguagePage() {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [inspirationInput, setInspirationInput] = useState("");
+  const [activeTab, setActiveTab] = useState("basics");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -140,18 +143,41 @@ export default function CreateLanguagePage() {
     },
   });
 
-  function onSubmit(data: FormValues) {
-    console.log(data);
-    // In a real app, this would save the language to a database
-    // For now, we'll just show a success message and redirect
-    alert("Language created successfully!");
-    router.push("/dashboard");
+  async function onSubmit(data: FormValues) {
+    try {
+      setIsSubmitting(true);
+
+      // Ensure null values are converted to undefined
+      const sanitizedData = {
+        ...data,
+        description: data.description ?? undefined,
+        inspiration: data.inspiration ?? undefined,
+        syllableStructure: data.syllableStructure ?? undefined,
+        sampleWords: data.sampleWords ?? undefined,
+        vowelInventory: data.vowelInventory ?? undefined,
+      };
+
+      const result = await createLanguage(sanitizedData);
+
+      if (result.success) {
+        toast("Language created successfully");
+        router.push(`/languages/${result.languageId}`);
+      } else {
+        toast("Failed to create language");
+      }
+    } catch (error) {
+      console.error("Error creating language:", error);
+      toast("Failed to create language");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const addInspiration = () => {
     if (!inspirationInput.trim()) return;
 
     const currentInspirations = form.getValues("inspiration") || [];
+
     if (!currentInspirations.includes(inspirationInput)) {
       form.setValue("inspiration", [...currentInspirations, inspirationInput]);
     }
@@ -166,12 +192,28 @@ export default function CreateLanguagePage() {
     );
   };
 
+  const handleNextTab = () => {
+    const tabOrder = ["basics", "phonology", "grammar", "vocabulary"];
+    const currentIndex = tabOrder.indexOf(activeTab);
+    if (currentIndex < tabOrder.length - 1) {
+      setActiveTab(tabOrder[currentIndex + 1]);
+    }
+  };
+
+  const handlePrevTab = () => {
+    const tabOrder = ["basics", "phonology", "grammar", "vocabulary"];
+    const currentIndex = tabOrder.indexOf(activeTab);
+    if (currentIndex > 0) {
+      setActiveTab(tabOrder[currentIndex - 1]);
+    }
+  };
+
   return (
-    <div className="container mx-auto max-w-5xl py-8">
+    <div className="container mx-auto max-w-6xl py-8">
       <div className="mb-8 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" asChild>
-            <Link href="/">
+            <Link href="/dashboard">
               <ArrowLeft className="h-4 w-4" />
               <span className="sr-only">Back</span>
             </Link>
@@ -186,7 +228,12 @@ export default function CreateLanguagePage() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <Tabs defaultValue="basics" className="w-full">
+          <Tabs
+            defaultValue="basics"
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="basics">Basics</TabsTrigger>
               <TabsTrigger value="phonology">Phonology</TabsTrigger>
@@ -269,6 +316,7 @@ export default function CreateLanguagePage() {
                             placeholder="Describe your language and its cultural context..."
                             className="min-h-[100px]"
                             {...field}
+                            value={field.value || ""}
                           />
                         </FormControl>
                         <FormDescription>
@@ -376,6 +424,11 @@ export default function CreateLanguagePage() {
                   />
                 </CardContent>
               </Card>
+              <div className="flex justify-end">
+                <Button type="button" onClick={handleNextTab}>
+                  Next: Phonology
+                </Button>
+              </div>
             </TabsContent>
 
             <TabsContent value="phonology" className="space-y-4 pt-4">
@@ -421,7 +474,7 @@ export default function CreateLanguagePage() {
                                         onCheckedChange={(checked) => {
                                           return checked
                                             ? field.onChange([
-                                                ...field.value,
+                                                ...(field.value || []),
                                                 item.value,
                                               ])
                                             : field.onChange(
@@ -460,6 +513,7 @@ export default function CreateLanguagePage() {
                             placeholder="e.g. a, e, i, o, u, ə, ɑ"
                             className="min-h-[80px]"
                             {...field}
+                            value={field.value || ""}
                           />
                         </FormControl>
                         <FormDescription>
@@ -506,7 +560,7 @@ export default function CreateLanguagePage() {
                           </TooltipProvider>
                         </div>
                         <FormControl>
-                          <Input {...field} />
+                          <Input {...field} value={field.value || ""} />
                         </FormControl>
                         <FormDescription>
                           Define the structure of syllables in your language.
@@ -539,6 +593,14 @@ export default function CreateLanguagePage() {
                   />
                 </CardContent>
               </Card>
+              <div className="flex justify-between">
+                <Button type="button" variant="outline" onClick={handlePrevTab}>
+                  Back
+                </Button>
+                <Button type="button" onClick={handleNextTab}>
+                  Next: Grammar
+                </Button>
+              </div>
             </TabsContent>
 
             <TabsContent value="grammar" className="space-y-4 pt-4">
@@ -629,6 +691,14 @@ export default function CreateLanguagePage() {
                   </div>
                 </CardContent>
               </Card>
+              <div className="flex justify-between">
+                <Button type="button" variant="outline" onClick={handlePrevTab}>
+                  Back
+                </Button>
+                <Button type="button" onClick={handleNextTab}>
+                  Next: Vocabulary
+                </Button>
+              </div>
             </TabsContent>
 
             <TabsContent value="vocabulary" className="space-y-4 pt-4">
@@ -651,6 +721,7 @@ export default function CreateLanguagePage() {
                             placeholder="Enter some initial words for your language, one per line. Format: word - meaning (e.g. 'kel - water')"
                             className="min-h-[200px]"
                             {...field}
+                            value={field.value || ""}
                           />
                         </FormControl>
                         <FormDescription>
@@ -663,18 +734,30 @@ export default function CreateLanguagePage() {
                   />
                 </CardContent>
               </Card>
+              <div className="flex justify-between">
+                <Button type="button" variant="outline" onClick={handlePrevTab}>
+                  Back
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="ml-auto"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="mr-2 h-4 w-4" />
+                      Create Language
+                    </>
+                  )}
+                </Button>
+              </div>
             </TabsContent>
           </Tabs>
-
-          <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" asChild>
-              <Link href="/">Cancel</Link>
-            </Button>
-            <Button type="submit">
-              <Save className="mr-2 h-4 w-4" />
-              Create Language
-            </Button>
-          </div>
         </form>
       </Form>
     </div>

@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
-      <div className="container mx-auto max-w-7xl px-4 md:px-6 flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
+      <div className="container mx-auto max-w-6xl flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
         <div className="flex gap-2 items-center text-xl font-bold">
           <Languages className="h-6 w-6" />
           <Link href={"/"}>LinguaForge</Link>
@@ -28,6 +28,12 @@ export default function Navbar() {
               className="px-4 py-2 text-sm font-medium hover:text-primary"
             >
               Pricing
+            </Link>
+            <Link
+              href="/languages"
+              className="px-4 py-2 text-sm font-medium hover:text-primary"
+            >
+              Languages
             </Link>
             <Button asChild className="ml-4">
               <Link href="/language">Get Started</Link>

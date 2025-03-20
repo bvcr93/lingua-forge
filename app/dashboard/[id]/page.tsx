@@ -378,43 +378,6 @@ export default function LanguageDashboardPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-40 w-full border-b bg-background">
-        <div className="container mx-auto max-w-7xl px-4 md:px-6 flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
-          <div className="flex gap-2 items-center text-xl font-bold">
-            <Languages className="h-6 w-6" />
-            <span>LinguaForge</span>
-          </div>
-          <div className="flex flex-1 items-center justify-end space-x-4">
-            <nav className="flex items-center space-x-1">
-              <Link
-                href="/dashboard"
-                className="px-4 py-2 text-sm font-medium hover:text-primary"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="#"
-                className="px-4 py-2 text-sm font-medium hover:text-primary"
-              >
-                Community
-              </Link>
-              <Link
-                href="#"
-                className="px-4 py-2 text-sm font-medium hover:text-primary"
-              >
-                Resources
-              </Link>
-              <Button variant="ghost" size="icon" className="ml-2">
-                <span className="sr-only">User menu</span>
-                <div className="rounded-full bg-primary text-primary-foreground h-8 w-8 flex items-center justify-center">
-                  <span className="text-sm font-medium">JD</span>
-                </div>
-              </Button>
-            </nav>
-          </div>
-        </div>
-      </header>
-
       <div className="flex flex-1">
         {/* Sidebar */}
         <aside className="hidden md:flex w-64 flex-col border-r bg-muted/40">

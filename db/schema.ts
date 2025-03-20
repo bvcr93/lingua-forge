@@ -20,8 +20,7 @@ export const users = pgTable("users", {
 export const languages = pgTable("languages", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id),
+    .references(() => users.id), // Remove `notNull()` to make it optional
   name: varchar("name", { length: 100 }).notNull(),
   description: text("description"),
   writingSystem: varchar("writing_system", { length: 50 }).notNull(),
@@ -29,7 +28,7 @@ export const languages = pgTable("languages", {
   hasGender: boolean("has_gender").default(false),
   hasCases: boolean("has_cases").default(false),
   hasTones: boolean("has_tones").default(false),
-  inspiration: text("inspiration"), // Can be stored as a JSON array or CSV
+  inspiration: text("inspiration"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -39,13 +38,12 @@ export const phonologies = pgTable("phonologies", {
   languageId: uuid("language_id")
     .notNull()
     .references(() => languages.id),
-  consonants: text("consonants"), // JSON format or CSV
-  consonantCategories: text("consonant_categories"), // Add this
-  vowels: text("vowels"), // JSON format or CSV
+  consonants: text("consonants"), 
+  consonantCategories: text("consonant_categories"),
+  vowels: text("vowels"), 
   syllableStructure: text("syllable_structure"),
   createdAt: timestamp("created_at").defaultNow(),
 });
-
 
 export const words = pgTable("words", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -57,10 +55,9 @@ export const words = pgTable("words", {
   pronunciation: text("pronunciation"),
   partOfSpeech: varchar("part_of_speech", { length: 50 }),
   notes: text("notes"),
-  sampleWords: text("sample_words"), // New column for bulk words
+  sampleWords: text("sample_words"),
   createdAt: timestamp("created_at").defaultNow(),
 });
-
 
 export const grammarRules = pgTable("grammar_rules", {
   id: uuid("id").defaultRandom().primaryKey(),
