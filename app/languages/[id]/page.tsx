@@ -3,11 +3,11 @@ import { languages } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { notFound } from "next/navigation"
 
-interface PageProps {
+export default async function LanguagePage({
+  params,
+}: {
   params: { id: string }
-}
-
-export default async function LanguagePage({ params }: PageProps) {
+}) {
   const language = await db.select().from(languages).where(eq(languages.id, params.id)).limit(1)
 
   if (!language.length) {
