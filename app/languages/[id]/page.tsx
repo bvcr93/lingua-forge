@@ -1,20 +1,25 @@
-import { db } from "@/db"
-import { languages } from "@/db/schema"
-import { eq } from "drizzle-orm"
-import { notFound } from "next/navigation"
+import { db } from "@/db";
+import { languages } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { notFound } from "next/navigation";
+import { NextPage } from "next";
 
-export default async function LanguagePage({
-  params,
-}: {
-  params: { id: string }
-}) {
-  const language = await db.select().from(languages).where(eq(languages.id, params.id)).limit(1)
+interface LanguagePageProps {
+  params: { id: string };
+}
+
+const LanguagePage: NextPage<LanguagePageProps> = async ({ params }) => {
+  const language = await db
+    .select()
+    .from(languages)
+    .where(eq(languages.id, params.id))
+    .limit(1);
 
   if (!language.length) {
-    notFound()
+    notFound();
   }
 
-  const lang = language[0]
+  const lang = language[0];
 
   return (
     <div className="container mx-auto py-8">
@@ -36,6 +41,7 @@ export default async function LanguagePage({
         <strong>Has Tones:</strong> {lang.hasTones ? "Yes" : "No"}
       </p>
     </div>
-  )
-}
+  );
+};
 
+export default LanguagePage;
