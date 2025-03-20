@@ -3,16 +3,17 @@ import { languages } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
-interface LanguagePageProps {
-  params: { id: string };
-}
+export default async function LanguagePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params; // Await params if Next.js provides it as a Promise
 
-export default async function LanguagePage({ params }: LanguagePageProps) {
-  // Ensure params.id is correctly accessed
   const language = await db
     .select()
     .from(languages)
-    .where(eq(languages.id, params.id))
+    .where(eq(languages.id, id))
     .limit(1);
 
   if (!language.length) {
