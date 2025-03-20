@@ -2,13 +2,13 @@ import { db } from "@/db";
 import { languages } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
-import { NextPage } from "next";
 
 interface LanguagePageProps {
   params: { id: string };
 }
 
-const LanguagePage: NextPage<LanguagePageProps> = async ({ params }) => {
+export default async function LanguagePage({ params }: LanguagePageProps) {
+  // Ensure params.id is correctly accessed
   const language = await db
     .select()
     .from(languages)
@@ -22,26 +22,14 @@ const LanguagePage: NextPage<LanguagePageProps> = async ({ params }) => {
   const lang = language[0];
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold">{lang.name}</h1>
+    <div>
+      <h1>{lang.name}</h1>
       <p>{lang.description || "No description provided."}</p>
-      <p>
-        <strong>Writing System:</strong> {lang.writingSystem}
-      </p>
-      <p>
-        <strong>Word Order:</strong> {lang.wordOrder}
-      </p>
-      <p>
-        <strong>Has Gender:</strong> {lang.hasGender ? "Yes" : "No"}
-      </p>
-      <p>
-        <strong>Has Cases:</strong> {lang.hasCases ? "Yes" : "No"}
-      </p>
-      <p>
-        <strong>Has Tones:</strong> {lang.hasTones ? "Yes" : "No"}
-      </p>
+      <p>Writing System: {lang.writingSystem}</p>
+      <p>Word Order: {lang.wordOrder}</p>
+      <p>Has Gender: {lang.hasGender ? "Yes" : "No"}</p>
+      <p>Has Cases: {lang.hasCases ? "Yes" : "No"}</p>
+      <p>Has Tones: {lang.hasTones ? "Yes" : "No"}</p>
     </div>
   );
-};
-
-export default LanguagePage;
+}
