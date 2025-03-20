@@ -7,7 +7,6 @@ import {
   FileText,
   Globe,
   Grid3X3,
-  Languages,
   LayoutGrid,
   Mic,
   Pencil,
@@ -18,7 +17,7 @@ import {
   Share2,
   Sparkles,
   Type,
-  Users,
+  Users
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";

@@ -3,12 +3,14 @@ import { languages } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
+interface PageProps {
+  params: { id: string };
+}
 export default async function LanguagePage({
   params,
 }: {
   params: { id: string };
 }) {
-
   const language = await db
     .select()
     .from(languages)
