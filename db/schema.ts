@@ -1,13 +1,10 @@
 import {
-  pgTable,
-  serial,
-  text,
-  integer,
   boolean,
-  primaryKey,
-  varchar,
-  uuid,
+  pgTable,
+  text,
   timestamp,
+  uuid,
+  varchar
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
@@ -20,7 +17,7 @@ export const users = pgTable("users", {
 export const languages = pgTable("languages", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id")
-    .references(() => users.id), // Remove `notNull()` to make it optional
+    .references(() => users.id),
   name: varchar("name", { length: 100 }).notNull(),
   description: text("description"),
   writingSystem: varchar("writing_system", { length: 50 }).notNull(),

@@ -7,7 +7,7 @@ export default async function LanguagesPage() {
   const allLanguages = await db.select().from(languages);
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto max-w-7xl py-8 px-4 bg-background text-foreground">
       <h1 className="text-3xl font-bold mb-4">All Languages</h1>
 
       {allLanguages.length === 0 ? (

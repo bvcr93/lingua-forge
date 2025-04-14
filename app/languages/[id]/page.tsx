@@ -25,7 +25,7 @@ export default async function LanguagePage({
   const lang = language[0];
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto max-w-7xl py-8 px-4 bg-background text-foreground">
       <Card className="max-w-3xl mx-auto">
         <CardHeader className="rounded-t-lg">
           <CardTitle className="text-3xl font-bold">{lang.name}</CardTitle>

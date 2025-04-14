@@ -206,7 +206,7 @@ export default function CreateLanguagePage() {
   };
 
   return (
-    <div className="container mx-auto max-w-6xl py-8">
+    <div className="container mx-auto max-w-7xl py-8 px-4 bg-background text-foreground">
       <div className="mb-8 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" asChild>
