@@ -1,6 +1,7 @@
 import type React from "react";
 import "@/app/globals.css";
 import Navbar from "@/components/ui/navbar";
+import Footer from "@/components/ui/footer";
 
 export const metadata = {
   title: "LinguaForge - Create Fictional Languages with Ease",
@@ -18,6 +19,7 @@ export default function RootLayout({
       <body>
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );
