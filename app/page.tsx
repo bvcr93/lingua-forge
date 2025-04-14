@@ -1,7 +1,5 @@
 import Hero from "@/components/ui/hero";
-import {
-  Languages
-} from "lucide-react";
+import { Languages } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
